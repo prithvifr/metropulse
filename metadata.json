@@ -1,0 +1,6 @@
+{
+  "name": "MetroPulse - Smart Public Transport & Live Bus Tracking",
+  "description": "Real-time bus tracking, passenger route search, live driver GPS & simulation, ETA prediction, delay alerts, and transport management platform.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'rprithvi388@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // 1. Passenger credentials & profiles (SAVED SEPARATELY)
+    match /passengers/{passengerId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 2. Driver credentials & profiles (SAVED SEPARATELY)
+    match /drivers/{driverId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // 3. Admin credentials & profiles (SAVED SEPARATELY)
+    match /admins/{adminId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Legacy / General users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Buses collection: Real-time public transit fleet telemetry & GPS
+    match /buses/{busId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Routes collection: Public transit routes and geometry
+    match /routes/{routeId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Trips collection: Real-time driver trip sessions
+    match /trips/{tripId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Alerts collection: Public service advisories and bulletins
+    match /alerts/{alertId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Tickets collection: Passenger transit passes
+    match /tickets/{ticketId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Test connection document
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

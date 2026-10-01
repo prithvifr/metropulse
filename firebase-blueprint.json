@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access information",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["passenger", "driver", "operator", "admin"] },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["userId", "email", "role"]
+    },
+    "Bus": {
+      "title": "Bus",
+      "description": "Public transport bus vehicle in the fleet",
+      "type": "object",
+      "properties": {
+        "busId": { "type": "string", "maxLength": 64 },
+        "busNumber": { "type": "string", "maxLength": 32 },
+        "vehicleNumber": { "type": "string", "maxLength": 32 },
+        "capacity": { "type": "number" },
+        "driverId": { "type": "string", "maxLength": 64 },
+        "driverName": { "type": "string", "maxLength": 128 },
+        "routeId": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["Available", "On Route", "Delayed", "Break", "Offline"] },
+        "currentLat": { "type": "number" },
+        "currentLng": { "type": "number" },
+        "currentSpeed": { "type": "number" },
+        "currentDelay": { "type": "number" },
+        "lastUpdated": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["busId", "busNumber", "vehicleNumber", "capacity", "status"]
+    },
+    "Route": {
+      "title": "Route",
+      "description": "Transit route connecting various bus stops",
+      "type": "object",
+      "properties": {
+        "routeId": { "type": "string", "maxLength": 64 },
+        "routeName": { "type": "string", "maxLength": 128 },
+        "startLocation": { "type": "string", "maxLength": 128 },
+        "destination": { "type": "string", "maxLength": 128 },
+        "estimatedDuration": { "type": "number" },
+        "activeStatus": { "type": "boolean" },
+        "fare": { "type": "number" },
+        "color": { "type": "string", "maxLength": 32 }
+      },
+      "required": ["routeId", "routeName", "startLocation", "destination", "estimatedDuration", "activeStatus"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "Active or historical trip conducted by a driver",
+      "type": "object",
+      "properties": {
+        "tripId": { "type": "string", "maxLength": 64 },
+        "busId": { "type": "string", "maxLength": 64 },
+        "driverId": { "type": "string", "maxLength": 64 },
+        "routeId": { "type": "string", "maxLength": 64 },
+        "startTime": { "type": "string", "maxLength": 64 },
+        "endTime": { "type": "string", "maxLength": 64 },
+        "currentLat": { "type": "number" },
+        "currentLng": { "type": "number" },
+        "currentStopName": { "type": "string", "maxLength": 128 },
+        "nextStopName": { "type": "string", "maxLength": 128 },
+        "tripStatus": { "type": "string", "enum": ["active", "completed", "cancelled"] },
+        "delayMinutes": { "type": "number" },
+        "speed": { "type": "number" }
+      },
+      "required": ["tripId", "busId", "driverId", "routeId", "startTime", "tripStatus"]
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Service alert or announcement published by dispatcher",
+      "type": "object",
+      "properties": {
+        "alertId": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 128 },
+        "message": { "type": "string", "maxLength": 512 },
+        "severity": { "type": "string", "enum": ["info", "warning", "emergency"] },
+        "affectedRouteId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 },
+        "active": { "type": "boolean" }
+      },
+      "required": ["alertId", "title", "message", "severity", "active"]
+    },
+    "Ticket": {
+      "title": "Ticket",
+      "description": "Digital passenger fare ticket with QR verification",
+      "type": "object",
+      "properties": {
+        "ticketId": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "routeId": { "type": "string", "maxLength": 64 },
+        "fromStop": { "type": "string", "maxLength": 128 },
+        "toStop": { "type": "string", "maxLength": 128 },
+        "passengerName": { "type": "string", "maxLength": 128 },
+        "fare": { "type": "number" },
+        "status": { "type": "string", "enum": ["valid", "used", "cancelled"] },
+        "qrCode": { "type": "string", "maxLength": 128 },
+        "purchaseTime": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["ticketId", "userId", "routeId", "fare", "status", "qrCode"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and credentials"
+    },
+    "/buses/{busId}": {
+      "schema": { "$ref": "#/entities/Bus" },
+      "description": "Fleet bus status and live positions"
+    },
+    "/routes/{routeId}": {
+      "schema": { "$ref": "#/entities/Route" },
+      "description": "Public transport routes"
+    },
+    "/trips/{tripId}": {
+      "schema": { "$ref": "#/entities/Trip" },
+      "description": "Active and finished bus trips"
+    },
+    "/alerts/{alertId}": {
+      "schema": { "$ref": "#/entities/Alert" },
+      "description": "Dispatcher announcements and service advisories"
+    },
+    "/tickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/Ticket" },
+      "description": "Passenger digital tickets"
+    }
+  }
+}
